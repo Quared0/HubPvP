@@ -79,10 +79,6 @@ public class Listeners implements Listener {
             this.pvpTime.remove(p);
             this.pvpTask.remove(p);
             p.teleport(p.getLocation().add(0.0D, 1.0D, 0.0D));
-    
-            for (Player all : Bukkit.getOnlinePlayers()) {
-                all.spigot().playEffect(p.getLocation().add(0.0D, 1.0D, 0.0D), Effect.CRIT, 0, 0, 0.2F, 0.2F, 0.2F, 0.3F, 80, 287);
-            }
             
             p.getInventory().setHeldItemSlot(0);
             p.sendMessage(plugin.format(plugin.getConfig().getString("killed-message")).replace("%killer%", killer.getDisplayName()));
