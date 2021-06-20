@@ -5,6 +5,6 @@ prefix: HubPvP
 authors: [ Quared ]
 description: HubPvP plugin, recontinued.
 commands:
-  pvpsword:
+  hubpvp:
     description: HubPvP core command.
     permission: hubpvp.reload

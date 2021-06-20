@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class Listeners implements Listener {
@@ -33,7 +34,15 @@ public class Listeners implements Listener {
         int slot = HubPvP.getPlugin().getConfig().getInt("slot");
         ItemStack sword = new ItemStack(Material.DIAMOND_SWORD);
         ItemMeta swordMeta = sword.getItemMeta();
-        swordMeta.spigot().setUnbreakable(true);
+        try {
+            swordMeta.spigot().setUnbreakable(true);
+        } catch (NoSuchMethodError ignored) {
+            try {
+                ItemMeta.class.getMethod("setUnbreakable", Boolean.class).invoke(swordMeta, true);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored2) {
+            
+            }
+        }
         swordMeta.setDisplayName(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("name")));
         swordMeta.setLore(Collections.singletonList(HubPvP.getPlugin().format("&7Hold to PvP!")));
         sword.setItemMeta(swordMeta);
@@ -76,9 +85,9 @@ public class Listeners implements Listener {
             }
             
             p.getInventory().setHeldItemSlot(0);
-            killer.sendMessage(plugin.format(plugin.getConfig().getString("killed-message")).replace("%killer%", p.getDisplayName()));
-            p.sendMessage(
-                    plugin.format(plugin.getConfig().getString("killed-other-message")).replace("%killed%", killer.getDisplayName()));
+            p.sendMessage(plugin.format(plugin.getConfig().getString("killed-message")).replace("%killer%", killer.getDisplayName()));
+            killer.sendMessage(
+                    plugin.format(plugin.getConfig().getString("killed-other-message")).replace("%killed%", p.getDisplayName()));
             p.getInventory().setHelmet(new ItemStack(Material.AIR));
             p.getInventory().setChestplate(new ItemStack(Material.AIR));
             p.getInventory().setLeggings(new ItemStack(Material.AIR));
@@ -97,7 +106,10 @@ public class Listeners implements Listener {
                 p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-enabled-message")));
                 this.pvpTime.put(p, HubPvP.getPlugin().getConfig().getInt("cooldown"));
                 this.pvp.add(p);
-                p.getInventory().setArmorContents(new ItemStack[4]);
+                p.getInventory().setHelmet(new ItemStack(Material.DIAMOND_HELMET));
+                p.getInventory().setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
+                p.getInventory().setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
+                p.getInventory().setBoots(new ItemStack(Material.DIAMOND_BOOTS));
             }
         } else if (this.pvp.contains(p) && this.pvpTime.containsKey(p)) {
             this.pvpTask.put(p, new BukkitRunnable() {
