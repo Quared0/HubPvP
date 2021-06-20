@@ -11,13 +11,21 @@ name: '&a&l<&r&a PvP Sword&a&l >'
 cooldown: 3
 
 # Messages
-pvp-enabled-message: '&6&l>&r&a PvP Enabled!'
-pvp-disabled-message: '&6&l>&r&c PvP Disabled!'
+pvp-enabled-message: '&6&l>&r&a PvP enabled!'
+pvp-disabled-message: '&6&l>&r&c PvP disabled!'
 pvp-disabling-message: '&cPvP disabling in %time% second(s).'
 reload-message: '&aSuccessfully reloaded PvPSword config!'
 
 killed-message: '&4%killer% &chas killed you.'
 killed-other-message: '&eYou have killed &6%killed%&e!'
+
+# Choose whether or not they are put back to spawn when they have been killed
+# This is only this plugin's respawns
+respawn-at-spawn: false
+
+# How much health is regained on kill, this is in HP, not hearts. Set to -1 to disable
+health-on-kill: 4
+health-gained-message: '&aYou killed %killed% and gained +%extra% health!'
 
 # Disabled worlds
 disabled-worlds:

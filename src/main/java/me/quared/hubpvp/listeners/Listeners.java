@@ -1,12 +1,11 @@
 package me.quared.hubpvp.listeners;
 
 import me.quared.hubpvp.HubPvP;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -17,6 +16,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.InvocationTargetException;
@@ -28,12 +28,14 @@ public class Listeners implements Listener {
     public HashMap<Player, BukkitRunnable> pvpTask = new HashMap<>();
     public ArrayList<Player> pvp = new ArrayList<>();
     
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         int slot = HubPvP.getPlugin().getConfig().getInt("slot");
         ItemStack sword = new ItemStack(Material.DIAMOND_SWORD);
         ItemMeta swordMeta = sword.getItemMeta();
+        p.getInventory().setArmorContents(new ItemStack[4]);
+        p.getInventory().setHeldItemSlot(0);
         try {
             swordMeta.spigot().setUnbreakable(true);
         } catch (NoSuchMethodError ignored) {
@@ -43,6 +45,7 @@ public class Listeners implements Listener {
             
             }
         }
+        p.setMetadata("pvp", new FixedMetadataValue(HubPvP.getPlugin(), false));
         swordMeta.setDisplayName(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("name")));
         swordMeta.setLore(Collections.singletonList(HubPvP.getPlugin().format("&7Hold to PvP!")));
         sword.setItemMeta(swordMeta);
@@ -52,17 +55,18 @@ public class Listeners implements Listener {
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent e) {
         if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
-            Player vic = (Player)e.getEntity();
-            Player dam = (Player)e.getDamager();
-            String world = vic.getLocation().getWorld().getName();
+            Player p = (Player) e.getEntity();
+            Player dam = (Player) e.getDamager();
+            String world = p.getLocation().getWorld().getName();
     
-            for (String s : HubPvP.getPlugin().getConfig().getStringList("disabled-worlds")) {
+            Set<String> set = new HashSet<>(HubPvP.getPlugin().getConfig().getStringList("disabled-worlds"));
+            for (String s : set) {
                 if (s.equalsIgnoreCase(world)) {
                     e.setCancelled(true);
                 }
             }
             
-            if (!this.pvp.contains(vic) || !this.pvp.contains(dam)) {
+            if (!this.pvp.contains(p) || !this.pvp.contains(dam)) {
                 e.setCancelled(true);
             }
         }
@@ -71,25 +75,48 @@ public class Listeners implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent e) {
         HubPvP plugin = HubPvP.getPlugin();
-        if (e.getEntity() instanceof Player || e.getEntity().getKiller() instanceof Player) {
+        if (e.getEntity().getKiller() != null) {
             Player p = e.getEntity();
             Player killer = p.getKiller();
-            p.setHealth(20.0D);
-            this.pvp.remove(p);
-            this.pvpTime.remove(p);
-            this.pvpTask.remove(p);
-            p.teleport(p.getLocation().add(0.0D, 1.0D, 0.0D));
             
-            p.getInventory().setHeldItemSlot(0);
-            p.sendMessage(plugin.format(plugin.getConfig().getString("killed-message")).replace("%killer%", killer.getDisplayName()));
-            killer.sendMessage(
-                    plugin.format(plugin.getConfig().getString("killed-other-message")).replace("%killed%", p.getDisplayName()));
-            p.getInventory().setHelmet(new ItemStack(Material.AIR));
-            p.getInventory().setChestplate(new ItemStack(Material.AIR));
-            p.getInventory().setLeggings(new ItemStack(Material.AIR));
-            p.getInventory().setBoots(new ItemStack(Material.AIR));
-            e.setDeathMessage(null);
+            if (p.getMetadata("pvp").get(0).asBoolean() &&
+                    killer.getMetadata("pvp").get(0).asBoolean()) {
+                if (plugin.getConfig().getInt("health-on-kill") != -1) {
+                    killer.setHealth(clamp(killer.getHealth() + plugin.getConfig().getInt("health-on-kill"), 0.0, 20.0));
+                    killer.sendMessage(plugin.format(plugin.getConfig().getString("health-gained-message")
+                            .replace("%extra%", plugin.getConfig().getString("health-on-kill")).replace("%killed%", p.getDisplayName())));
+                }
+                p.setHealth(20.0D);
+    
+                this.pvp.remove(p);
+                this.pvpTime.remove(p);
+                this.pvpTask.remove(p);
+                p.teleport(p.getLocation().add(0.0D, 1.0D, 0.0D));
+    
+                p.getInventory().setHeldItemSlot(0);
+                p.sendMessage(plugin.format(plugin.getConfig().getString("killed-message")).replace("%killer%", killer.getDisplayName()));
+                killer.sendMessage(
+                        plugin.format(plugin.getConfig().getString("killed-other-message")).replace("%killed%", p.getDisplayName()));
+                p.getInventory().setHelmet(new ItemStack(Material.AIR));
+                p.getInventory().setChestplate(new ItemStack(Material.AIR));
+                p.getInventory().setLeggings(new ItemStack(Material.AIR));
+                p.getInventory().setBoots(new ItemStack(Material.AIR));
+                p.setMetadata("pvp", new FixedMetadataValue(HubPvP.getPlugin(), false));
+                e.setDeathMessage(null);
+            }
         }
+    }
+    
+    /**
+     * Clamp Double values to a given range
+     *
+     * @param value     the value to clamp
+     * @param min       the minimum value
+     * @param max       the maximum value
+     * @return          the clamped value
+     */
+    public double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
     }
     
     @EventHandler
@@ -106,6 +133,7 @@ public class Listeners implements Listener {
                 p.getInventory().setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
                 p.getInventory().setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
                 p.getInventory().setBoots(new ItemStack(Material.DIAMOND_BOOTS));
+                p.setMetadata("pvp", new FixedMetadataValue(HubPvP.getPlugin(), true));
             }
         } else if (this.pvp.contains(p) && this.pvpTime.containsKey(p)) {
             this.pvpTask.put(p, new BukkitRunnable() {
@@ -120,6 +148,7 @@ public class Listeners implements Listener {
                             Listeners.this.pvp.remove(p);
                             p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-disabled-message")));
                             p.getInventory().setArmorContents(new ItemStack[4]);
+                            p.setMetadata("pvp", new FixedMetadataValue(HubPvP.getPlugin(), false));
                             this.cancel();
                         } else {
                             p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-disabling-message").replaceAll("%time%", Integer.toString(Listeners.this.pvpTime.get(p)))));

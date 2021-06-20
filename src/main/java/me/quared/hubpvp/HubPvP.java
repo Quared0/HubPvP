@@ -6,7 +6,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class HubPvP extends JavaPlugin {
     
-    private static String version;
     private static HubPvP plugin;
     
     @Override
