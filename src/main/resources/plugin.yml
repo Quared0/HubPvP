@@ -1,0 +1,9 @@
+name: PvPSword
+version: ${project.version}
+main: me.quared.pvpsword.PvPSword
+prefix: PvPSword
+authors: [ Quared ]
+description: PvPSword plugin, recontinued.
+commands:
+  pvpsword:
+    description: PvPSword core command.

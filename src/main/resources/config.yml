@@ -1,0 +1,24 @@
+# PvPSword Remastered by Quared
+# Have an issue? Report it on our Spigot page!
+
+# Sword slot inside the player's inventory
+slot: 9
+
+# PvP Sword name
+name: '&a&l<&r&a PvP Sword&a&l >'
+
+# Change the cooldown when disabling PvP (seconds)
+cooldown: 3
+
+# Messages
+pvp-enabled-message: '&6&l>&r&a PvP Enabled!'
+pvp-disabled-message: '&6&l>&r&c PvP Disabled!'
+pvp-disabling-message: '&cPvP disabling in %time% second(s).'
+reload-message: '&aSuccessfully reloaded PvPSword config!'
+
+killed-message: '&4%killer% &chas killed you.'
+killed-other-message: '&eYou have killed &6%killed%&e!'
+
+# Disabled worlds
+disabled-worlds:
+  - world_nopvp
