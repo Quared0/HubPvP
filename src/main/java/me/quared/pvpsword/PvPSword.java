@@ -20,6 +20,8 @@ public final class PvPSword extends JavaPlugin {
         
         getCommand("pvpsword").setExecutor(new PvPSwordCommand());
         getCommand("pvpsword").setTabCompleter(new PvPSwordCommand());
+        
+        saveDefaultConfig();
     }
     
     @Override
