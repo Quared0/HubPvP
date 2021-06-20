@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.quared</groupId>
-    <artifactId>PvPSword-Remastered</artifactId>
-    <version>1.0</version>
+    <artifactId>HubPvP</artifactId>
+    <version>Unknown</version>
     <packaging>jar</packaging>
 
-    <name>PvPSword</name>
+    <name>HubPvP</name>
 
-    <description>PvPSword plugin, recontinued.</description>
+    <description>HubPvP plugin</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

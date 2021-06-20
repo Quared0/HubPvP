@@ -1,11 +1,10 @@
-package me.quared.pvpsword.listeners;
+package me.quared.hubpvp.listeners;
 
-import me.quared.pvpsword.PvPSword;
+import me.quared.hubpvp.HubPvP;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,19 +23,19 @@ import java.util.*;
 
 public class Listeners implements Listener {
     
-    public HashMap<Player, Integer> pvpTime = new HashMap();
-    public HashMap<Player, BukkitRunnable> pvpTask = new HashMap();
-    public ArrayList<Player> pvp = new ArrayList();
+    public HashMap<Player, Integer> pvpTime = new HashMap<>();
+    public HashMap<Player, BukkitRunnable> pvpTask = new HashMap<>();
+    public ArrayList<Player> pvp = new ArrayList<>();
     
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        int slot = PvPSword.getPlugin().getConfig().getInt("slot");
+        int slot = HubPvP.getPlugin().getConfig().getInt("slot");
         ItemStack sword = new ItemStack(Material.DIAMOND_SWORD);
         ItemMeta swordMeta = sword.getItemMeta();
         swordMeta.spigot().setUnbreakable(true);
-        swordMeta.setDisplayName(PvPSword.getPlugin().format(PvPSword.getPlugin().getConfig().getString("name")));
-        swordMeta.setLore(Collections.singletonList(PvPSword.getPlugin().format("&7Hold to PvP!")));
+        swordMeta.setDisplayName(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("name")));
+        swordMeta.setLore(Collections.singletonList(HubPvP.getPlugin().format("&7Hold to PvP!")));
         sword.setItemMeta(swordMeta);
         p.getInventory().setItem(slot - 1, sword);
     }
@@ -48,7 +47,7 @@ public class Listeners implements Listener {
             Player dam = (Player)e.getDamager();
             String world = vic.getLocation().getWorld().getName();
     
-            for (String s : PvPSword.getPlugin().getConfig().getStringList("disabled-worlds")) {
+            for (String s : HubPvP.getPlugin().getConfig().getStringList("disabled-worlds")) {
                 if (s.equalsIgnoreCase(world)) {
                     e.setCancelled(true);
                 }
@@ -58,12 +57,11 @@ public class Listeners implements Listener {
                 e.setCancelled(true);
             }
         }
-        
     }
     
     @EventHandler
     public void onDeath(PlayerDeathEvent e) {
-        PvPSword plugin = PvPSword.getPlugin();
+        HubPvP plugin = HubPvP.getPlugin();
         if (e.getEntity() instanceof Player || e.getEntity().getKiller() instanceof Player) {
             Player p = e.getEntity();
             Player killer = p.getKiller();
@@ -78,9 +76,9 @@ public class Listeners implements Listener {
             }
             
             p.getInventory().setHeldItemSlot(0);
-            killer.sendMessage(plugin.format(plugin.getConfig().getString("killed-message")).replace("%killed%", p.getDisplayName()));
+            killer.sendMessage(plugin.format(plugin.getConfig().getString("killed-message")).replace("%killer%", p.getDisplayName()));
             p.sendMessage(
-                    plugin.format(plugin.getConfig().getString("killed-other-message")).replace("%killer%", killer.getDisplayName()));
+                    plugin.format(plugin.getConfig().getString("killed-other-message")).replace("%killed%", killer.getDisplayName()));
             p.getInventory().setHelmet(new ItemStack(Material.AIR));
             p.getInventory().setChestplate(new ItemStack(Material.AIR));
             p.getInventory().setLeggings(new ItemStack(Material.AIR));
@@ -93,16 +91,13 @@ public class Listeners implements Listener {
     public void onSlotChange(PlayerItemHeldEvent e) {
         final Player p = e.getPlayer();
         int slot = e.getNewSlot();
-        int pvpSlot = PvPSword.getPlugin().getConfig().getInt("slot") - 1;
+        int pvpSlot = HubPvP.getPlugin().getConfig().getInt("slot") - 1;
         if (slot == pvpSlot) {
             if (!this.pvp.contains(p) && !this.pvpTime.containsKey(p) && !this.pvpTask.containsKey(p)) {
-                p.sendMessage(PvPSword.getPlugin().format(PvPSword.getPlugin().getConfig().getString("pvp-enabled-message")));
-                this.pvpTime.put(p, PvPSword.getPlugin().getConfig().getInt("cooldown"));
+                p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-enabled-message")));
+                this.pvpTime.put(p, HubPvP.getPlugin().getConfig().getInt("cooldown"));
                 this.pvp.add(p);
-                p.getInventory().setHelmet(new ItemStack(Material.DIAMOND_HELMET));
-                p.getInventory().setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
-                p.getInventory().setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
-                p.getInventory().setBoots(new ItemStack(Material.DIAMOND_BOOTS));
+                p.getInventory().setArmorContents(new ItemStack[4]);
             }
         } else if (this.pvp.contains(p) && this.pvpTime.containsKey(p)) {
             this.pvpTask.put(p, new BukkitRunnable() {
@@ -115,48 +110,41 @@ public class Listeners implements Listener {
                             Listeners.this.pvpTime.remove(p);
                             Listeners.this.pvpTask.remove(p);
                             Listeners.this.pvp.remove(p);
-                            p.sendMessage(PvPSword.getPlugin().format(PvPSword.getPlugin().getConfig().getString("pvp-disabled-message")));
+                            p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-disabled-message")));
                             p.getInventory().setArmorContents(new ItemStack[4]);
                             this.cancel();
                         } else {
-                            p.sendMessage(PvPSword.getPlugin().format(PvPSword.getPlugin().getConfig().getString("pvp-disabling-message").replaceAll("%time%", Integer.toString((Integer)Listeners.this.pvpTime.get(p)))));
+                            p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-disabling-message").replaceAll("%time%", Integer.toString(Listeners.this.pvpTime.get(p)))));
                         }
                     }
                     
                 }
             });
-            (this.pvpTask.get(p)).runTaskTimer(PvPSword.getPlugin(), 0L, 20L);
+            (this.pvpTask.get(p)).runTaskTimer(HubPvP.getPlugin(), 0L, 20L);
         }
-        
     }
     
     @EventHandler
     public void onClick(InventoryClickEvent e) {
-        Player p = (Player)e.getWhoClicked();
         ItemStack item = e.getCurrentItem();
-        ItemMeta meta = item.getItemMeta();
         if (item.getType().equals(Material.DIAMOND_SWORD) && item.hasItemMeta()
-                && ChatColor.stripColor(item.getItemMeta().getDisplayName()).equals(ChatColor.stripColor(PvPSword.getPlugin().getConfig().getString("name")))) {
+                && ChatColor.stripColor(item.getItemMeta().getDisplayName()).equals(ChatColor.stripColor(HubPvP.getPlugin().getConfig().getString("name")))) {
             e.setCancelled(true);
         }
         
         if (e.getSlotType() == InventoryType.SlotType.ARMOR) {
             e.setCancelled(true);
         }
-        
     }
     
     @EventHandler
     public void onDrop(PlayerDropItemEvent e) {
-        Player p = e.getPlayer();
         ItemStack item = e.getItemDrop().getItemStack();
-        ItemMeta meta = item.getItemMeta();
         if (item.getType().equals(Material.DIAMOND_SWORD)
                 && item.hasItemMeta()
-                && ChatColor.stripColor(item.getItemMeta().getDisplayName()).equals(ChatColor.stripColor(PvPSword.getPlugin().getConfig().getString("name")))) {
+                && ChatColor.stripColor(item.getItemMeta().getDisplayName()).equals(ChatColor.stripColor(HubPvP.getPlugin().getConfig().getString("name")))) {
             e.setCancelled(true);
         }
-        
     }
     
 }

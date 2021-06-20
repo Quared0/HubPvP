@@ -1,9 +1,10 @@
-name: PvPSword
+name: HubPvP
 version: ${project.version}
-main: me.quared.pvpsword.PvPSword
-prefix: PvPSword
+main: me.quared.hubpvp.HubPvP
+prefix: HubPvP
 authors: [ Quared ]
-description: PvPSword plugin, recontinued.
+description: HubPvP plugin, recontinued.
 commands:
   pvpsword:
-    description: PvPSword core command.
+    description: HubPvP core command.
+    permission: hubpvp.reload
