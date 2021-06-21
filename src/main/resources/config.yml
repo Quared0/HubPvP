@@ -7,11 +7,13 @@ slot: 9
 # PvP Sword name
 name: '&a&l<&r&a PvP Sword&a&l >'
 
-# Change the cooldown when disabling PvP (seconds)
-cooldown: 3
+# Change the cooldown when enabling/disabling PvP (seconds). Set to -1 to disable.
+enable-cooldown: 3
+disable-cooldown: 3
 
 # Messages
 pvp-enabled-message: '&6&l>&r&a PvP enabled!'
+pvp-enabling-message: '&aPvP enabling in %time% second(s).'
 pvp-disabled-message: '&6&l>&r&c PvP disabled!'
 pvp-disabling-message: '&cPvP disabling in %time% second(s).'
 reload-message: '&aSuccessfully reloaded PvPSword config!'

@@ -26,6 +26,8 @@ public class Listeners implements Listener {
     
     public HashMap<Player, Integer> pvpTime = new HashMap<>();
     public HashMap<Player, BukkitRunnable> pvpTask = new HashMap<>();
+    public HashMap<Player, Integer> pvpTime2 = new HashMap<>();
+    public HashMap<Player, BukkitRunnable> pvpTask2 = new HashMap<>();
     public ArrayList<Player> pvp = new ArrayList<>();
     
     @EventHandler(priority = EventPriority.NORMAL)
@@ -82,17 +84,21 @@ public class Listeners implements Listener {
             if (p.getMetadata("pvp").get(0).asBoolean() &&
                     killer.getMetadata("pvp").get(0).asBoolean()) {
                 if (plugin.getConfig().getInt("health-on-kill") != -1) {
-                    killer.setHealth(clamp(killer.getHealth() + plugin.getConfig().getInt("health-on-kill"), 0.0, 20.0));
+                    killer.setHealth(clamp(killer.getHealth() + plugin.getConfig().getInt("health-on-kill"), 0.0, killer.getMaxHealth()));
                     killer.sendMessage(plugin.format(plugin.getConfig().getString("health-gained-message")
                             .replace("%extra%", plugin.getConfig().getString("health-on-kill")).replace("%killed%", p.getDisplayName())));
                 }
-                p.setHealth(20.0D);
+                p.setHealth(p.getMaxHealth());
     
                 this.pvp.remove(p);
                 this.pvpTime.remove(p);
                 this.pvpTask.remove(p);
-                if (plugin.getConfig().getBoolean("respawn-at-spawn"))
+                this.pvpTime2.remove(p);
+                this.pvpTask2.remove(p);
+                if (!plugin.getConfig().getBoolean("respawn-at-spawn"))
                     p.teleport(p.getLocation().add(0.0D, 1.0D, 0.0D));
+                else
+                    p.teleport(p.getWorld().getSpawnLocation());
     
                 p.getInventory().setHeldItemSlot(0);
                 p.sendMessage(plugin.format(plugin.getConfig().getString("killed-message")).replace("%killer%", killer.getDisplayName()));
@@ -125,41 +131,117 @@ public class Listeners implements Listener {
         final Player p = e.getPlayer();
         int slot = e.getNewSlot();
         int pvpSlot = HubPvP.getPlugin().getConfig().getInt("slot") - 1;
+        HubPvP plugin = HubPvP.getPlugin();
         if (slot == pvpSlot) {
-            if (!this.pvp.contains(p) && !this.pvpTime.containsKey(p) && !this.pvpTask.containsKey(p)) {
+            if (plugin.getConfig().getInt("enable-cooldown") > 0) {
+                if (Listeners.this.pvpTask.containsKey(p)) {
+                    Listeners.this.pvpTask.get(p).cancel();
+                    Listeners.this.pvpTask.remove(p);
+                    pvpTime.put(p, HubPvP.getPlugin().getConfig().getInt("cooldown") + 1);
+                    pvp.add(p);
+        
+                    return;
+                }
+                this.pvpTime2.put(p, HubPvP.getPlugin().getConfig().getInt("cooldown") + 1);
+                this.pvpTask2.put(p, new BukkitRunnable() {
+                    public void run() {
+                        if (!Listeners.this.pvpTime2.containsKey(p)) {
+                            this.cancel();
+                        } else {
+                            Listeners.this.pvpTime2.put(p, Listeners.this.pvpTime2.get(p) - 1);
+                            if (Listeners.this.pvpTime2.get(p) == 0) {
+                                Listeners.this.pvpTime2.remove(p);
+                                Listeners.this.pvpTask2.remove(p);
+                                p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-enabled-message")));
+                                Listeners.this.pvpTime.put(p, HubPvP.getPlugin().getConfig().getInt("cooldown") + 1);
+                                Listeners.this.pvp.add(p);
+                    
+                                p.getInventory().setHelmet(new ItemStack(Material.DIAMOND_HELMET));
+                                p.getInventory().setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
+                                p.getInventory().setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
+                                p.getInventory().setBoots(new ItemStack(Material.DIAMOND_BOOTS));
+                    
+                                p.setMetadata("pvp", new FixedMetadataValue(HubPvP.getPlugin(), true));
+                                p.setHealth(p.getMaxHealth());
+                                this.cancel();
+                            } else {
+                                p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-enabling-message").replaceAll("%time%", Integer.toString(Listeners.this.pvpTime2.get(p)))));
+                            }
+                        }
+            
+                    }
+                });
+                (this.pvpTask2.get(p)).runTaskTimer(HubPvP.getPlugin(), 0L, 20L);
+            } else {
+                pvp.add(p);
+    
                 p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-enabled-message")));
-                this.pvpTime.put(p, HubPvP.getPlugin().getConfig().getInt("cooldown"));
-                this.pvp.add(p);
+                
                 p.getInventory().setHelmet(new ItemStack(Material.DIAMOND_HELMET));
                 p.getInventory().setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
                 p.getInventory().setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
                 p.getInventory().setBoots(new ItemStack(Material.DIAMOND_BOOTS));
+    
                 p.setMetadata("pvp", new FixedMetadataValue(HubPvP.getPlugin(), true));
+                p.setHealth(p.getMaxHealth());
             }
+//            p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-enabled-message")));
+//            if (this.pvpTask.containsKey(p))
+//                this.pvpTask.get(p).cancel();
+//            this.pvpTask.remove(p);
+//            this.pvpTime.put(p, HubPvP.getPlugin().getConfig().getInt("cooldown") + 1);
+//            this.pvp.add(p);
+//            p.getInventory().setHelmet(new ItemStack(Material.DIAMOND_HELMET));
+//            p.getInventory().setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
+//            p.getInventory().setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
+//            p.getInventory().setBoots(new ItemStack(Material.DIAMOND_BOOTS));
+//            p.setMetadata("pvp", new FixedMetadataValue(HubPvP.getPlugin(), true));
         } else if (this.pvp.contains(p) && this.pvpTime.containsKey(p)) {
-            this.pvpTask.put(p, new BukkitRunnable() {
-                public void run() {
-                    if (!Listeners.this.pvpTime.containsKey(p)) {
-                        this.cancel();
-                    } else {
-                        Listeners.this.pvpTime.put(p, Listeners.this.pvpTime.get(p) - 1);
-                        if (Listeners.this.pvpTime.get(p) == 0) {
-                            Listeners.this.pvpTime.remove(p);
-                            Listeners.this.pvpTask.remove(p);
-                            Listeners.this.pvp.remove(p);
-                            p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-disabled-message")));
-                            p.getInventory().setArmorContents(new ItemStack[4]);
-                            p.setMetadata("pvp", new FixedMetadataValue(HubPvP.getPlugin(), false));
+            if (plugin.getConfig().getInt("disable-cooldown") > 0) {
+                this.pvpTask.put(p, new BukkitRunnable() {
+                    public void run() {
+                        if (!Listeners.this.pvpTime.containsKey(p)) {
                             this.cancel();
                         } else {
-                            p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-disabling-message").replaceAll("%time%", Integer.toString(Listeners.this.pvpTime.get(p)))));
+                            Listeners.this.pvpTime.put(p, Listeners.this.pvpTime.get(p) - 1);
+                            if (Listeners.this.pvpTime.get(p) == 0) {
+                                Listeners.this.pvpTime.remove(p);
+                                Listeners.this.pvpTask.remove(p);
+                                Listeners.this.pvp.remove(p);
+                                p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-disabled-message")));
+                                p.getInventory().setArmorContents(new ItemStack[4]);
+                                p.setMetadata("pvp", new FixedMetadataValue(HubPvP.getPlugin(), false));
+                                p.setHealth(p.getMaxHealth());
+                                this.cancel();
+                            } else {
+                                p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-disabling-message").replaceAll("%time%", Integer.toString(Listeners.this.pvpTime.get(p)))));
+                            }
                         }
+            
                     }
-                    
-                }
-            });
-            (this.pvpTask.get(p)).runTaskTimer(HubPvP.getPlugin(), 0L, 20L);
+                });
+                (this.pvpTask.get(p)).runTaskTimer(HubPvP.getPlugin(), 0L, 20L);
+            } else {
+                Listeners.this.pvp.remove(p);
+                p.sendMessage(HubPvP.getPlugin().format(HubPvP.getPlugin().getConfig().getString("pvp-disabled-message")));
+                p.getInventory().setArmorContents(new ItemStack[4]);
+                p.setMetadata("pvp", new FixedMetadataValue(HubPvP.getPlugin(), false));
+                p.setHealth(p.getMaxHealth());
+            }
+        } else if (pvpTask2.containsKey(p)) {
+            pvpTask2.get(p).cancel();
+            pvpTask2.remove(p);
+            pvpTime2.put(p, HubPvP.getPlugin().getConfig().getInt("cooldown") + 1);
+            pvp.remove(p);
         }
+    }
+    
+    private void pvpOn(Player p) {
+    
+    }
+    
+    private void pvpOff(Player p) {
+    
     }
     
     @EventHandler
