@@ -91,7 +91,8 @@ public class Listeners implements Listener {
                 this.pvp.remove(p);
                 this.pvpTime.remove(p);
                 this.pvpTask.remove(p);
-                p.teleport(p.getLocation().add(0.0D, 1.0D, 0.0D));
+                if (plugin.getConfig().getBoolean("respawn-at-spawn"))
+                    p.teleport(p.getLocation().add(0.0D, 1.0D, 0.0D));
     
                 p.getInventory().setHeldItemSlot(0);
                 p.sendMessage(plugin.format(plugin.getConfig().getString("killed-message")).replace("%killer%", killer.getDisplayName()));
