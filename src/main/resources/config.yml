@@ -1,10 +1,10 @@
-# PvPSword Remastered by Quared
+# HubPvP by Quared, v1.1.1
 # Have an issue? Report it on our Spigot page!
 
 # Sword slot inside the player's inventory
 slot: 9
 
-# PvP Sword name
+# PvP sword name
 name: '&a&l<&r&a PvP Sword&a&l >'
 
 # Change the cooldown when enabling/disabling PvP (seconds). Set to -1 to disable.
