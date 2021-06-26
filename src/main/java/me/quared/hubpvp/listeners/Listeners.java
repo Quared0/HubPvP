@@ -134,7 +134,6 @@ public class Listeners implements Listener {
     @EventHandler
     public void onSlotChange(PlayerItemHeldEvent e) {
         final Player p = e.getPlayer();
-        int slot = e.getNewSlot();
         ItemStack held = e.getPlayer().getInventory().getItem(e.getNewSlot());
         HubPvP plugin = HubPvP.getPlugin();
         if (!p.hasPermission("hubpvp.use"))

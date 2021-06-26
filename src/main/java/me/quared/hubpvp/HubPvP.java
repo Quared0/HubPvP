@@ -2,15 +2,7 @@ package me.quared.hubpvp;
 
 import me.quared.hubpvp.commands.HubPvPCommand;
 import me.quared.hubpvp.listeners.Listeners;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.yaml.snakeyaml.Yaml;
-
-import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 public final class HubPvP extends JavaPlugin {
     
