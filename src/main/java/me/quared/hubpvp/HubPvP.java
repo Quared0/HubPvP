@@ -30,28 +30,8 @@ public final class HubPvP extends JavaPlugin {
         getCommand("hubpvp").setExecutor(new HubPvPCommand());
         getCommand("hubpvp").setTabCompleter(new HubPvPCommand());
         
-        loadConfig();
-    }
-    
-    public void loadConfig() {
-        try {
-            boolean changesMade = false;
-            FileConfiguration config = getConfig();
-            YamlConfiguration tmp = new YamlConfiguration();
-            InputStream in = getClass().getResourceAsStream("/config.yml");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            tmp.load(reader);
-            
-            for (String str : tmp.getKeys(true)) {
-                if (!config.getKeys(true).contains(str)) {
-                    config.set(str, tmp.get(str));
-                    changesMade = true;
-                }
-            }
-            if (changesMade) config.save(getDataFolder() + "/config.yml");
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
+        getConfig().options().copyDefaults(true);
+        saveDefaultConfig();
     }
     
     @Override
