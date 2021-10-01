@@ -57,7 +57,7 @@ public class Listeners implements Listener {
         p.getInventory().setHeldItemSlot(0);
         p.setMetadata("pvp", new FixedMetadataValue(HubPvP.getPlugin(), false));
 
-        if (p.hasPermission("huvpvp.use"))
+        if (p.hasPermission("hubpvp.use"))
             p.getInventory().setItem(slot - 1, sword);
     }
     
