@@ -1,46 +1,65 @@
 package me.quared.hubpvp;
 
 import me.quared.hubpvp.commands.HubPvPCommand;
-import me.quared.hubpvp.listeners.Listeners;
+import me.quared.hubpvp.core.PvPManager;
+import me.quared.hubpvp.listeners.*;
+import me.quared.hubpvp.util.StringUtil;
+import me.quared.itemguilib.ItemGuiLib;
+import me.quared.hubpvp.bstats.Metrics;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Objects;
+
 public final class HubPvP extends JavaPlugin {
-    
-    private static HubPvP plugin;
-    private Listeners listeners;
-    
+
+	private static HubPvP instance;
+
+	private PvPManager pvpManager;
+
+	public static HubPvP instance() {
+		return instance;
+	}
+
+	@Override
+	public void onEnable() {
+		instance = this;
+        ItemGuiLib.setPluginInstance(this);
+        pvpManager = new PvPManager();
+
+		new Metrics(this, 11826); // bStats
+
+        registerListeners();
+        registerCommands();
+
+		getConfig().options().copyDefaults(true);
+		saveDefaultConfig();
+
+        getLogger().info(StringUtil.colorize("&a" + getDescription().getName() + " v" + getDescription().getVersion() + " enabled."));
+	}
+
+    private void registerListeners() {
+        PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(new DamageListener(), this);
+        pm.registerEvents(new DeathListener(), this);
+        pm.registerEvents(new ItemSlotChangeListener(), this);
+        pm.registerEvents(new PlayerJoinListener(), this);
+        pm.registerEvents(new ProtectionListeners(), this);
+    }
+
+    private void registerCommands() {
+        Objects.requireNonNull(getCommand("hubpvp")).setExecutor(new HubPvPCommand());
+        Objects.requireNonNull(getCommand("hubpvp")).setTabCompleter(new HubPvPCommand());
+    }
+
     @Override
-    public void onEnable() {
-        // Plugin startup logic
-        plugin = this;
-        
-        getServer().getConsoleSender().sendMessage(format("&a" + getDescription().getName() + " v" + getDescription().getVersion() + " enabled."));
-        
-        listeners = new Listeners();
-        getServer().getPluginManager().registerEvents(listeners, this);
-        
-        getCommand("hubpvp").setExecutor(new HubPvPCommand());
-        getCommand("hubpvp").setTabCompleter(new HubPvPCommand());
-        
-        getConfig().options().copyDefaults(true);
-        saveDefaultConfig();
-    }
-    
-    @Override
-    public void onDisable() {
-        listeners.pvpTask.clear();
-        listeners.pvpTask2.clear();
-        listeners.pvp.clear();
-        listeners.flying.clear();
-        getServer().getConsoleSender().sendMessage(format("&c" + getDescription().getName() + " v" + getDescription().getVersion() + " disabled."));
-    }
-    
-    public static HubPvP getPlugin() {
-        return plugin;
-    }
-    
-    public String format(String text) {
-        return text.replaceAll("&", "§");
-    }
-    
+	public void onDisable() {
+		pvpManager.disable();
+		getServer().getConsoleSender().sendMessage(StringUtil.colorize("&c" + getDescription().getName() + " v" + getDescription().getVersion() + " disabled."));
+	}
+
+	public PvPManager pvpManager() {
+		return pvpManager;
+	}
+
 }

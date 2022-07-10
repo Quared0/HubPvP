@@ -1,6 +1,7 @@
 name: HubPvP
 version: ${project.version}
 main: me.quared.hubpvp.HubPvP
+api-version: 1.19
 prefix: HubPvP
 authors: [ Quared ]
 description: HubPvP plugin - A sword that players can PvP each other with in the hub!

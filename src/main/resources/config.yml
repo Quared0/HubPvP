@@ -1,13 +1,16 @@
-# HubPvP by Quared, v1.1.1
+# HubPvP by Quared, v${project.version}
 # Have an issue? Report it on our Spigot page!
 
-# Sword slot inside the player's inventory
-slot: 9
+slot: 9 # Sword slot inside the player's inventory
 
-# PvP sword name
-name: '&a&l<&r&a PvP Sword&a&l >'
+# Updating anything here requires a server restart.
+weapon:
+  material: DIAMOND_SWORD # Item to use as the sword
+  name: '&a&l<&r&a PvP Sword&a&l >' # Name of the item
+  lore: # Item description, shown when hovering over in inventory
+    - "&7&oUse this sword to PvP players in the hub!"
 
-# Change the cooldown when enabling/disabling PvP (seconds). Set to -1 to disable.
+# Change the cooldown when enabling/disabling PvP (seconds). Set to 0 to disable.
 enable-cooldown: 3
 disable-cooldown: 3
 
@@ -21,7 +24,7 @@ reload-message: '&aSuccessfully reloaded PvPSword config!'
 killed-message: '&4%killer% &chas killed you.'
 killed-other-message: '&eYou have killed &6%killed%&e!'
 
-# Choose whether or not they are put back to spawn when they have been killed
+# Choose whether they are put back to spawn when they have been killed
 # This is only this plugin's respawns
 respawn-at-spawn: false
 
