@@ -87,6 +87,7 @@ public class PvPManager {
 	}
 
 	public void removePlayer(Player p) {
+		disablePvP(p);
 		playerPvpStates.remove(p);
 	}
 
@@ -103,6 +104,10 @@ public class PvPManager {
 
 	public @Nullable OldPlayerData getOldData(Player p) {
 		return oldPlayerDataList.stream().filter(data -> data.player().equals(p)).findFirst().orElse(null);
+	}
+
+	public void giveWeapon(Player p) {
+		p.getInventory().setItem(HubPvP.instance().getConfig().getInt("slot") - 1, weapon().getItemStack());
 	}
 
 }

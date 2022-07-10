@@ -18,7 +18,7 @@ public class PlayerJoinListener implements Listener {
 		PvPManager pvPManager = HubPvP.instance().pvpManager();
 
 		if (p.hasPermission("hubpvp.use")) {
-			p.getInventory().setItem(HubPvP.instance().getConfig().getInt("slot") - 1, pvPManager.weapon().getItemStack());
+			pvPManager.giveWeapon(p);
 		}
 
 		pvPManager.oldPlayerDataList().add(new OldPlayerData(p, p.getInventory().getArmorContents(), p.getAllowFlight()));
