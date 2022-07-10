@@ -40,10 +40,10 @@ public class DeathListener implements Listener {
 				else
 					victim.teleport(victim.getWorld().getSpawnLocation());
 
-				victim.sendMessage(StringUtil.colorize(instance.getConfig().getString("killed-message")).replace("%killer%", killer.getDisplayName()));
+				victim.sendMessage(StringUtil.colorize(instance.getConfig().getString("lang.killed")).replace("%killer%", killer.getDisplayName()));
 
 				killer.sendMessage(
-						StringUtil.colorize(instance.getConfig().getString("killed-other-message")).replace("%killed%", victim.getDisplayName()));
+						StringUtil.colorize(instance.getConfig().getString("lang.killed-other")).replace("%killed%", victim.getDisplayName()));
 
 				e.setDeathMessage("");
 			}

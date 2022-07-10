@@ -18,7 +18,8 @@ public class HubPvPCommand implements CommandExecutor, TabCompleter {
 			if (args[0].equalsIgnoreCase("reload")) {
 				HubPvP plugin = HubPvP.instance();
 				plugin.reloadConfig();
-				sender.sendMessage(StringUtil.colorize(plugin.getConfig().getString("reload-message")));
+				plugin.pvpManager().loadItems();
+				sender.sendMessage(StringUtil.colorize(plugin.getConfig().getString("lang.reloaded")));
 			} else {
 				sender.sendMessage(ChatColor.RED + "Invalid arguments. Use: /" + label + " <reload>");
 			}

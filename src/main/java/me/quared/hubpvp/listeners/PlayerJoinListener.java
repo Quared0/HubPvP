@@ -23,7 +23,6 @@ public class PlayerJoinListener implements Listener {
 
 		pvPManager.oldPlayerDataList().add(new OldPlayerData(p, p.getInventory().getArmorContents(), p.getAllowFlight()));
 		pvPManager.playerState(p, PvPState.OFF);
-
 	}
 
 	@EventHandler

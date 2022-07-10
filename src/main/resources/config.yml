@@ -1,31 +1,15 @@
 # HubPvP by Quared, v${project.version}
 # Have an issue? Report it on our Spigot page!
 
-slot: 9 # Sword slot inside the player's inventory
-
-# Updating anything here requires a server restart.
-weapon:
-  material: DIAMOND_SWORD # Item to use as the sword
-  name: '&a&l<&r&a PvP Sword&a&l >' # Name of the item
-  lore: # Item description, shown when hovering over in inventory
-    - "&7&oUse this sword to PvP players in the hub!"
+# --------------------------------------------------
+# General
+# --------------------------------------------------
 
 # Change the cooldown when enabling/disabling PvP (seconds). Set to 0 to disable.
 enable-cooldown: 3
 disable-cooldown: 3
 
-# Messages
-pvp-enabled-message: '&6&l>&r&a PvP enabled!'
-pvp-enabling-message: '&aPvP enabling in %time% second(s).'
-pvp-disabled-message: '&6&l>&r&c PvP disabled!'
-pvp-disabling-message: '&cPvP disabling in %time% second(s).'
-reload-message: '&aSuccessfully reloaded PvPSword config!'
-
-killed-message: '&4%killer% &chas killed you.'
-killed-other-message: '&eYou have killed &6%killed%&e!'
-
 # Choose whether they are put back to spawn when they have been killed
-# This is only this plugin's respawns
 respawn-at-spawn: false
 
 # How much health is regained on kill, this is in HP, not hearts. Set to -1 to disable
@@ -35,3 +19,49 @@ health-gained-message: '&aYou killed %killed% and gained +%extra% health!'
 # Disabled worlds
 disabled-worlds:
   - world_nopvp
+
+# --------------------------------------------------
+# Messages
+# --------------------------------------------------
+
+lang:
+  pvp-enabled: '&6&l>&r&a PvP enabled!'
+  pvp-enabling: '&aPvP enabling in %time% second(s).'
+  pvp-disabled: '&6&l>&r&c PvP disabled!'
+  pvp-disabling: '&cPvP disabling in %time% second(s).'
+  reloaded: '&aSuccessfully reloaded the HubPvP config!'
+  killed: '&4%killer% &chas killed you.'
+  killed-other: '&eYou have killed &6%killed%&e!'
+
+# --------------------------------------------------
+# Item Customisation
+# --------------------------------------------------
+
+# Leave blank for defaults (except for slot and material).
+items:
+  weapon:
+    slot: 9 # Sword slot inside the player's inventory
+    material: DIAMOND_SWORD # Item to use as the sword
+    name: '&a&l<&r&a PvP Sword&a&l >' # Name of the item
+    lore: # Item description, shown when hovering over in inventory
+      - "&7&oUse this sword to PvP players in the hub!"
+  helmet:
+    material: DIAMOND_HELMET # Item to use as the helmet
+    name: ""
+    lore:
+      - ""
+  chestplate:
+    material: DIAMOND_CHESTPLATE # Item to use as the chestplate
+    name: ""
+    lore:
+      - ""
+  leggings:
+    material: DIAMOND_LEGGINGS # Item to use as the leggings
+    name: ""
+    lore:
+      - ""
+  boots:
+    material: DIAMOND_BOOTS # Item to use as the boots
+    name: ""
+    lore:
+      - ""

@@ -38,7 +38,7 @@ public class ItemSlotChangeListener implements Listener {
 							pvPManager.enablePvP(p);
 							cancel();
 						} else {
-							p.sendMessage(StringUtil.colorize(instance.getConfig().getString("pvp-enabling-message").replaceAll("%time%", Integer.toString(time))));
+							p.sendMessage(StringUtil.colorize(instance.getConfig().getString("lang.pvp-enabling").replaceAll("%time%", Integer.toString(time))));
 						}
 					}
 				}.runTaskTimer(instance, 0L, 20L);
@@ -58,7 +58,7 @@ public class ItemSlotChangeListener implements Listener {
 						pvPManager.disablePvP(p);
 						cancel();
 					} else {
-						p.sendMessage(StringUtil.colorize(instance.getConfig().getString("pvp-disabling-message").replaceAll("%time%", Integer.toString(time))));
+						p.sendMessage(StringUtil.colorize(instance.getConfig().getString("lang.pvp-disabling").replaceAll("%time%", Integer.toString(time))));
 					}
 				}
 			}.runTaskTimer(instance, 0L, 20L);
