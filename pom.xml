@@ -6,14 +6,14 @@
 
     <groupId>me.quared</groupId>
     <artifactId>HubPvP</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.0.1</version>
     <packaging>jar</packaging>
 
     <name>HubPvP</name>
 
     <description>HubPvP plugin</description>
     <properties>
-        <java.version>18</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
