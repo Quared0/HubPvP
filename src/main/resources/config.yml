@@ -7,7 +7,7 @@
 
 # Change the cooldown when enabling/disabling PvP (seconds). Set to 0 to disable.
 enable-cooldown: 3
-disable-cooldown: 3
+disable-cooldown: 0
 
 # Choose whether they are put back to spawn when they have been killed
 respawn-at-spawn: false
@@ -37,31 +37,22 @@ lang:
 # Item Customisation
 # --------------------------------------------------
 
-# Leave blank for defaults (except for slot and material).
 items:
   weapon:
     slot: 9 # Sword slot inside the player's inventory
     material: DIAMOND_SWORD # Item to use as the sword
-    name: '&a&l<&r&a PvP Sword&a&l >' # Name of the item
+    name: '&7> &#db86e6&lP&#da85d0&lv&#d984ba&lP &#d883a4&lS&#d8818d&lw&#d78077&lo&#d67f61&lr&#d57e4b&ld &7<' # Name of the item
     lore: # Item description, shown when hovering over in inventory
-      - "&7&oUse this sword to PvP players in the hub!"
+      - "&7Equip this sword to fight other players!"
+    enchantments:
+      - "sharpness:1"
   helmet:
     material: DIAMOND_HELMET # Item to use as the helmet
-    name: ""
-    lore:
-      - ""
+    enchantments:
+      - "protection:1"
   chestplate:
     material: DIAMOND_CHESTPLATE # Item to use as the chestplate
-    name: ""
-    lore:
-      - ""
   leggings:
     material: DIAMOND_LEGGINGS # Item to use as the leggings
-    name: ""
-    lore:
-      - ""
   boots:
     material: DIAMOND_BOOTS # Item to use as the boots
-    name: ""
-    lore:
-      - ""

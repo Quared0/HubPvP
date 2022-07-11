@@ -3,8 +3,10 @@ package me.quared.hubpvp.commands;
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.util.StringUtil;
 import org.bukkit.ChatColor;
-import org.bukkit.command.*;
-import org.bukkit.entity.Player;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;

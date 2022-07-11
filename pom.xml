@@ -6,7 +6,7 @@
 
     <groupId>me.quared</groupId>
     <artifactId>HubPvP</artifactId>
-    <version>1.4.0.1</version>
+    <version>1.4.2</version>
     <packaging>jar</packaging>
 
     <name>HubPvP</name>
@@ -55,8 +55,8 @@
 
     <repositories>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>papermc-repo</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
         <repository>
             <id>sonatype</id>
@@ -66,21 +66,22 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
             <version>1.19-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>me.quared</groupId>
             <artifactId>item-gui-lib</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>23.0.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

@@ -4,10 +4,11 @@ import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.util.StringUtil;
 import me.quared.itemguilib.items.CustomItem;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -38,10 +39,6 @@ public class PvPManager {
 		chestplate = getItemFromConfig("chestplate");
 		leggings = getItemFromConfig("leggings");
 		boots = getItemFromConfig("boots");
-	}
-
-	public @Unmodifiable Map<Player, PvPState> playerPvpStates() {
-		return playerPvpStates;
 	}
 
 	public void enablePvP(Player player) {
@@ -95,12 +92,12 @@ public class PvPManager {
 		playerPvpStates.remove(p);
 	}
 
-    public void disable() {
-        for (Player p : playerPvpStates.keySet()) {
-            if (isInPvP(p)) disablePvP(p);
-        }
-        playerPvpStates.clear();
-    }
+	public void disable() {
+		for (Player p : playerPvpStates.keySet()) {
+			if (isInPvP(p)) disablePvP(p);
+		}
+		playerPvpStates.clear();
+	}
 
 	public List<OldPlayerData> oldPlayerDataList() {
 		return oldPlayerDataList;
@@ -116,13 +113,31 @@ public class PvPManager {
 
 	public CustomItem getItemFromConfig(String name) {
 		HubPvP instance = HubPvP.instance();
-		CustomItem item = new CustomItem(new ItemStack(Material.valueOf(instance.getConfig().getString("items." + name + ".material"))));
+		String material = instance.getConfig().getString("items." + name + ".material");
+		if (material == null) {
+			instance.getLogger().warning("Material for item " + name + " is null!");
+			return null;
+		}
+		CustomItem item = new CustomItem(new ItemStack(Material.valueOf(material)));
 
 		String itemName = instance.getConfig().getString("items." + name + ".name");
 		if (itemName != null && !itemName.isEmpty()) item.setName(StringUtil.colorize(itemName));
 
 		List<String> lore = instance.getConfig().getStringList("items." + name + ".lore");
 		if (!(lore.size() == 1 && lore.get(0).isEmpty())) item.addLore(StringUtil.colorize(lore));
+
+		List<String> enchants = instance.getConfig().getStringList("items." + name + ".enchantments");
+		if (enchants != null && !enchants.isEmpty()) {
+			for (String enchant : enchants) {
+				String[] split = enchant.split(":");
+				Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(split[0].toLowerCase()));
+				if (enchantment == null) {
+					HubPvP.instance().getLogger().warning("Could not find enchantment " + split[0]);
+					continue;
+				}
+				item.getItemStack().addEnchantment(enchantment, Integer.parseInt(split[1]));
+			}
+		}
 
 		item.addFlags(ItemFlag.HIDE_UNBREAKABLE);
 		item.setUnbreakable(true);

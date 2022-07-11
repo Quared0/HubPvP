@@ -3,13 +3,12 @@ package me.quared.hubpvp.listeners;
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.core.PvPManager;
 import me.quared.hubpvp.util.StringUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-
-import java.awt.*;
 
 public class DeathListener implements Listener {
 
@@ -45,7 +44,7 @@ public class DeathListener implements Listener {
 				killer.sendMessage(
 						StringUtil.colorize(instance.getConfig().getString("lang.killed-other")).replace("%killed%", victim.getDisplayName()));
 
-				e.setDeathMessage("");
+				e.deathMessage(Component.empty());
 			}
 		}
 	}

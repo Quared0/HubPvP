@@ -25,7 +25,8 @@ Once the sword is unequipped, the player will no longer be in PvP and can't be a
 
 # What versions is it?
 
-HubPvP natively supports 1.19. You may attempt to use it on earlier versions, however, support will not be given for them.
+HubPvP natively supports 1.19. You may attempt to use it on earlier versions, however, support will not be given for
+them.
 
 # Where can I download it?
 
