@@ -100,15 +100,6 @@ public class Metrics {
 						logResponseStatusText);
 	}
 
-	/**
-	 * Adds a custom chart.
-	 *
-	 * @param chart The chart to add.
-	 */
-	public void addCustomChart(CustomChart chart) {
-		metricsBase.addCustomChart(chart);
-	}
-
 	private void appendPlatformData(JsonObjectBuilder builder) {
 		builder.appendField("playerAmount", getPlayerAmount());
 		builder.appendField("onlineMode", Bukkit.getOnlineMode() ? 1 : 0);
@@ -138,6 +129,15 @@ public class Metrics {
 			// Just use the new method if the reflection failed
 			return Bukkit.getOnlinePlayers().size();
 		}
+	}
+
+	/**
+	 * Adds a custom chart.
+	 *
+	 * @param chart The chart to add.
+	 */
+	public void addCustomChart(CustomChart chart) {
+		metricsBase.addCustomChart(chart);
 	}
 
 	public static class MetricsBase {
@@ -236,24 +236,25 @@ public class Metrics {
 		}
 
 		/**
-		 * Gzips the given string.
-		 *
-		 * @param str The string to gzip.
-		 * @return The gzipped string.
+		 * Checks that the class was properly relocated.
 		 */
-		private static byte[] compress(final String str) throws IOException {
-			if (str == null) {
-				return null;
+		private void checkRelocation() {
+			// You can use the property to disable the check in your test environment
+			if (System.getProperty("bstats.relocatecheck") == null
+					|| !System.getProperty("bstats.relocatecheck").equals("false")) {
+				// Maven's Relocate is clever and changes strings, too. So we have to use this little
+				// "trick" ... :D
+				final String defaultPackage =
+						new String(new byte[] { 'o', 'r', 'g', '.', 'b', 's', 't', 'a', 't', 's' });
+				final String examplePackage =
+						new String(new byte[] { 'y', 'o', 'u', 'r', '.', 'p', 'a', 'c', 'k', 'a', 'g', 'e' });
+				// We want to make sure no one just copy & pastes the example and uses the wrong package
+				// names
+				if (MetricsBase.class.getPackage().getName().startsWith(defaultPackage)
+						|| MetricsBase.class.getPackage().getName().startsWith(examplePackage)) {
+					throw new IllegalStateException("bStats Metrics class has not been relocated correctly!");
+				}
 			}
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			try (GZIPOutputStream gzip = new GZIPOutputStream(outputStream)) {
-				gzip.write(str.getBytes(StandardCharsets.UTF_8));
-			}
-			return outputStream.toByteArray();
-		}
-
-		public void addCustomChart(CustomChart chart) {
-			this.customCharts.add(chart);
 		}
 
 		private void startSubmitting() {
@@ -347,26 +348,26 @@ public class Metrics {
 		}
 
 		/**
-		 * Checks that the class was properly relocated.
+		 * Gzips the given string.
+		 *
+		 * @param str The string to gzip.
+		 * @return The gzipped string.
 		 */
-		private void checkRelocation() {
-			// You can use the property to disable the check in your test environment
-			if (System.getProperty("bstats.relocatecheck") == null
-					|| !System.getProperty("bstats.relocatecheck").equals("false")) {
-				// Maven's Relocate is clever and changes strings, too. So we have to use this little
-				// "trick" ... :D
-				final String defaultPackage =
-						new String(new byte[]{'o', 'r', 'g', '.', 'b', 's', 't', 'a', 't', 's'});
-				final String examplePackage =
-						new String(new byte[]{'y', 'o', 'u', 'r', '.', 'p', 'a', 'c', 'k', 'a', 'g', 'e'});
-				// We want to make sure no one just copy & pastes the example and uses the wrong package
-				// names
-				if (MetricsBase.class.getPackage().getName().startsWith(defaultPackage)
-						|| MetricsBase.class.getPackage().getName().startsWith(examplePackage)) {
-					throw new IllegalStateException("bStats Metrics class has not been relocated correctly!");
-				}
+		private static byte[] compress(final String str) throws IOException {
+			if (str == null) {
+				return null;
 			}
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			try (GZIPOutputStream gzip = new GZIPOutputStream(outputStream)) {
+				gzip.write(str.getBytes(StandardCharsets.UTF_8));
+			}
+			return outputStream.toByteArray();
 		}
+
+		public void addCustomChart(CustomChart chart) {
+			this.customCharts.add(chart);
+		}
+
 	}
 
 	public static class DrilldownPie extends CustomChart {
@@ -411,6 +412,7 @@ public class Metrics {
 			}
 			return new JsonObjectBuilder().appendField("values", valuesBuilder.build()).build();
 		}
+
 	}
 
 	public static class AdvancedPie extends CustomChart {
@@ -451,6 +453,7 @@ public class Metrics {
 			}
 			return new JsonObjectBuilder().appendField("values", valuesBuilder.build()).build();
 		}
+
 	}
 
 	public static class MultiLineChart extends CustomChart {
@@ -491,6 +494,7 @@ public class Metrics {
 			}
 			return new JsonObjectBuilder().appendField("values", valuesBuilder.build()).build();
 		}
+
 	}
 
 	public static class SimpleBarChart extends CustomChart {
@@ -517,10 +521,11 @@ public class Metrics {
 				return null;
 			}
 			for (Map.Entry<String, Integer> entry : map.entrySet()) {
-				valuesBuilder.appendField(entry.getKey(), new int[]{entry.getValue()});
+				valuesBuilder.appendField(entry.getKey(), new int[] { entry.getValue() });
 			}
 			return new JsonObjectBuilder().appendField("values", valuesBuilder.build()).build();
 		}
+
 	}
 
 	public abstract static class CustomChart {
@@ -555,6 +560,7 @@ public class Metrics {
 		}
 
 		protected abstract JsonObjectBuilder.JsonObject getChartData() throws Exception;
+
 	}
 
 	public static class SimplePie extends CustomChart {
@@ -581,6 +587,7 @@ public class Metrics {
 			}
 			return new JsonObjectBuilder().appendField("value", value).build();
 		}
+
 	}
 
 	public static class AdvancedBarChart extends CustomChart {
@@ -621,6 +628,7 @@ public class Metrics {
 			}
 			return new JsonObjectBuilder().appendField("values", valuesBuilder.build()).build();
 		}
+
 	}
 
 	public static class SingleLineChart extends CustomChart {
@@ -647,6 +655,7 @@ public class Metrics {
 			}
 			return new JsonObjectBuilder().appendField("value", value).build();
 		}
+
 	}
 
 	/**
@@ -663,6 +672,37 @@ public class Metrics {
 
 		public JsonObjectBuilder() {
 			builder.append("{");
+		}
+
+		/**
+		 * Appends a null field to the JSON.
+		 *
+		 * @param key The key of the field.
+		 * @return A reference to this object.
+		 */
+		public JsonObjectBuilder appendNull(String key) {
+			appendFieldUnescaped(key, "null");
+			return this;
+		}
+
+		/**
+		 * Appends a field to the object.
+		 *
+		 * @param key          The key of the field.
+		 * @param escapedValue The escaped value of the field.
+		 */
+		private void appendFieldUnescaped(String key, String escapedValue) {
+			if (builder == null) {
+				throw new IllegalStateException("JSON has already been built");
+			}
+			if (key == null) {
+				throw new IllegalArgumentException("JSON key must not be null");
+			}
+			if (hasAtLeastOneField) {
+				builder.append(",");
+			}
+			builder.append("\"").append(escape(key)).append("\":").append(escapedValue);
+			hasAtLeastOneField = true;
 		}
 
 		/**
@@ -691,17 +731,6 @@ public class Metrics {
 				}
 			}
 			return builder.toString();
-		}
-
-		/**
-		 * Appends a null field to the JSON.
-		 *
-		 * @param key The key of the field.
-		 * @return A reference to this object.
-		 */
-		public JsonObjectBuilder appendNull(String key) {
-			appendFieldUnescaped(key, "null");
-			return this;
 		}
 
 		/**
@@ -800,26 +829,6 @@ public class Metrics {
 		}
 
 		/**
-		 * Appends a field to the object.
-		 *
-		 * @param key          The key of the field.
-		 * @param escapedValue The escaped value of the field.
-		 */
-		private void appendFieldUnescaped(String key, String escapedValue) {
-			if (builder == null) {
-				throw new IllegalStateException("JSON has already been built");
-			}
-			if (key == null) {
-				throw new IllegalArgumentException("JSON key must not be null");
-			}
-			if (hasAtLeastOneField) {
-				builder.append(",");
-			}
-			builder.append("\"").append(escape(key)).append("\":").append(escapedValue);
-			hasAtLeastOneField = true;
-		}
-
-		/**
 		 * Builds the JSON string and invalidates this builder.
 		 *
 		 * @return The built JSON string.
@@ -852,6 +861,9 @@ public class Metrics {
 			public String toString() {
 				return value;
 			}
+
 		}
+
 	}
+
 }

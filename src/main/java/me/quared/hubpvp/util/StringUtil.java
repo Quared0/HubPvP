@@ -1,6 +1,5 @@
 package me.quared.hubpvp.util;
 
-import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 
 import java.util.ArrayList;
@@ -10,10 +9,17 @@ import java.util.regex.Pattern;
 
 public final class StringUtil {
 
+	private static final Pattern HEX_PATTERN = Pattern.compile("&(#\\w{6})");
+
 	private StringUtil() {
 		throw new UnsupportedOperationException("This class is not meant to be instantiated.");
 	}
-	private static final Pattern HEX_PATTERN = Pattern.compile("&(#\\w{6})");
+
+	public static List<String> colorize(List<String> strings) {
+		List<String> finalList = new ArrayList<>();
+		for (String s : strings) finalList.add(colorize(s));
+		return finalList;
+	}
 
 	public static String colorize(String message) {
 		Matcher matcher = HEX_PATTERN.matcher(ChatColor.translateAlternateColorCodes('&', message));
@@ -24,12 +30,6 @@ public final class StringUtil {
 		}
 
 		return matcher.appendTail(buffer).toString();
-	}
-
-	public static List<String> colorize(List<String> strings) {
-		List<String> finalList = new ArrayList<>();
-		for (String s : strings) finalList.add(colorize(s));
-		return finalList;
 	}
 
 }

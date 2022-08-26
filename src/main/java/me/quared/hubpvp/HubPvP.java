@@ -22,6 +22,12 @@ public final class HubPvP extends JavaPlugin {
 	}
 
 	@Override
+	public void onDisable() {
+		pvpManager.disable();
+		getServer().getConsoleSender().sendMessage(StringUtil.colorize("&c" + getDescription().getName() + " v" + getDescription().getVersion() + " disabled."));
+	}
+
+	@Override
 	public void onEnable() {
 		instance = this;
 		ItemGuiLib.setPluginInstance(this);
@@ -50,12 +56,6 @@ public final class HubPvP extends JavaPlugin {
 	private void registerCommands() {
 		Objects.requireNonNull(getCommand("hubpvp")).setExecutor(new HubPvPCommand());
 		Objects.requireNonNull(getCommand("hubpvp")).setTabCompleter(new HubPvPCommand());
-	}
-
-	@Override
-	public void onDisable() {
-		pvpManager.disable();
-		getServer().getConsoleSender().sendMessage(StringUtil.colorize("&c" + getDescription().getName() + " v" + getDescription().getVersion() + " disabled."));
 	}
 
 	public PvPManager pvpManager() {

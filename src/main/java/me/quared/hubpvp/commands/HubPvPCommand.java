@@ -38,4 +38,5 @@ public class HubPvPCommand implements CommandExecutor, TabCompleter {
 		}
 		return null;
 	}
+
 }
