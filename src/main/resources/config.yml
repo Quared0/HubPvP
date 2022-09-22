@@ -16,8 +16,7 @@ respawn-at-spawn: false
 health-on-kill: 4
 health-gained-message: '&aYou killed %killed% and gained +%extra% health!'
 
-# Disabled worlds
-disabled-worlds:
+worlds:
   - world_nopvp
 
 # --------------------------------------------------
