@@ -24,6 +24,13 @@ public class ItemSlotChangeListener implements Listener {
 
 		if (held != null && held.isSimilar(pvPManager.weapon().getItemStack())) {
 			if (pvPManager.playerState(p) == PvPState.DISABLING) pvPManager.playerState(p, PvPState.ON);
+			if (pvPManager.playerState(p) == PvPState.ENABLING) return;
+
+			if (HubPvP.instance().getConfig().getStringList("disabled-worlds").contains(p.getWorld().getName())) {
+				p.sendMessage(StringUtil.colorize(instance.getConfig().getString("lang.disabled-in-world")));
+				return;
+			}
+
 			// Equipping
 			if (!pvPManager.isInPvP(p)) {
 				pvPManager.playerState(p, PvPState.ENABLING);

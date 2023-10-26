@@ -12,25 +12,27 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerJoinListener implements Listener {
 
-	@EventHandler
-	public void onJoin(PlayerJoinEvent e) {
-		Player p = e.getPlayer();
-		PvPManager pvPManager = HubPvP.instance().pvpManager();
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
+        Player p = e.getPlayer();
+        PvPManager pvPManager = HubPvP.instance().pvpManager();
 
-		if (p.hasPermission("hubpvp.use")) {
-			pvPManager.giveWeapon(p);
-		}
 
-		pvPManager.oldPlayerDataList().add(new OldPlayerData(p, p.getInventory().getArmorContents(), p.getAllowFlight()));
-		pvPManager.playerState(p, PvPState.OFF);
-	}
+        if (p.hasPermission("hubpvp.use") &&
+                HubPvP.instance().getConfig().getStringList("disabled-worlds").contains(p.getWorld().getName())) {
+            pvPManager.giveWeapon(p);
+        }
 
-	@EventHandler
-	public void onQuit(PlayerQuitEvent e) {
-		Player p = e.getPlayer();
-		PvPManager pvPManager = HubPvP.instance().pvpManager();
+        pvPManager.oldPlayerDataList().add(new OldPlayerData(p, p.getInventory().getArmorContents(), p.getAllowFlight()));
+        pvPManager.playerState(p, PvPState.OFF);
+    }
 
-		pvPManager.removePlayer(p);
-	}
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        Player p = e.getPlayer();
+        PvPManager pvPManager = HubPvP.instance().pvpManager();
+
+        pvPManager.removePlayer(p);
+    }
 
 }

@@ -1,6 +1,8 @@
 # HubPvP by Quared, v${project.version}
 # Have an issue? Report it on our Spigot page!
 
+
+
 # --------------------------------------------------
 # General
 # --------------------------------------------------
@@ -9,14 +11,21 @@
 enable-cooldown: 3
 disable-cooldown: 0
 
-# Choose whether they are put back to spawn when they have been killed
-respawn-at-spawn: false
+# Respawn location
+respawn:
+  enabled: true # Should HubPvP teleport a player when they die?
+  use-world-spawn: false # Overrides x, y, z, yaw, pitch
+  x: 0
+  y: 100
+  z: 0
+  yaw: 0
+  pitch: 0
 
 # How much health is regained on kill, this is in HP, not hearts. Set to -1 to disable
 health-on-kill: 4
 health-gained-message: '&aYou killed %killed% and gained +%extra% health!'
 
-worlds:
+disabled-worlds:
   - world_nopvp
 
 # --------------------------------------------------
@@ -31,6 +40,7 @@ lang:
   reloaded: '&aSuccessfully reloaded the HubPvP config!'
   killed: '&4%killer% &chas killed you.'
   killed-other: '&eYou have killed &6%killed%&e!'
+  disabled-in-world: "&cYou may not use this in this world!"
 
 # --------------------------------------------------
 # Item Customisation

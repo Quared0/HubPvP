@@ -3,6 +3,7 @@ package me.quared.hubpvp.core;
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.util.StringUtil;
 import me.quared.itemguilib.items.CustomItem;
+import me.quared.itemguilib.items.CustomItemManager;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -48,7 +49,7 @@ public class PvPManager {
 			instance.getLogger().warning("Material for item " + name + " is null!");
 			return null;
 		}
-		CustomItem item = new CustomItem(new ItemStack(Material.valueOf(material)));
+		CustomItem item = CustomItemManager.get().createCustomItem(new ItemStack(Material.valueOf(material)));
 
 		String itemName = instance.getConfig().getString("items." + name + ".name");
 		if (itemName != null && !itemName.isEmpty()) item.setName(StringUtil.colorize(itemName));
