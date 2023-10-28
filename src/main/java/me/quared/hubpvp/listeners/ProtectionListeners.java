@@ -20,7 +20,7 @@ public class ProtectionListeners implements Listener {
 		if (item == null) return;
 
 		if (pvPManager.isInPvP(p)) {
-			if (item.isSimilar(pvPManager.weapon().getItemStack())) {
+			if (item.isSimilar(pvPManager.getWeapon().getItemStack())) {
 				e.setCancelled(true);
 			} else if (e.getSlotType() == InventoryType.SlotType.ARMOR) {
 				e.setCancelled(true);
@@ -35,7 +35,7 @@ public class ProtectionListeners implements Listener {
 		PvPManager pvPManager = HubPvP.instance().pvpManager();
 
 		if (pvPManager.isInPvP(p)) {
-			if (item.isSimilar(pvPManager.weapon().getItemStack())) {
+			if (item.isSimilar(pvPManager.getWeapon().getItemStack())) {
 				e.setCancelled(true);
 			} else if (item.getType().toString().toLowerCase().contains("armor")) { // very bad way of doing this, feel free to make a new branch to update
 				e.setCancelled(true);

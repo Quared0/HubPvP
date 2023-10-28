@@ -1,5 +1,6 @@
 package me.quared.hubpvp.core;
 
+import lombok.Getter;
 import me.quared.hubpvp.HubPvP;
 import me.quared.hubpvp.util.StringUtil;
 import me.quared.itemguilib.items.CustomItem;
@@ -10,6 +11,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -17,15 +19,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 public class PvPManager {
 
 	private final Map<Player, PvPState> playerPvpStates;
+	private final Map<Player, BukkitRunnable> currentTimers;
 	private final List<OldPlayerData> oldPlayerDataList;
 
 	private CustomItem weapon, helmet, chestplate, leggings, boots;
 
 	public PvPManager() {
 		playerPvpStates = new HashMap<>();
+		currentTimers = new HashMap<>();
 		oldPlayerDataList = new ArrayList<>();
 
 		loadItems();
@@ -77,46 +82,26 @@ public class PvPManager {
 	}
 
 	public void enablePvP(Player player) {
-		playerState(player, PvPState.ON);
+		setPlayerState(player, PvPState.ON);
 
-		if (getOldData(player) != null) oldPlayerDataList().remove(getOldData(player));
-		oldPlayerDataList().add(new OldPlayerData(player, player.getInventory().getArmorContents(), player.getAllowFlight()));
+		if (getOldData(player) != null) getOldPlayerDataList().remove(getOldData(player));
+		getOldPlayerDataList().add(new OldPlayerData(player, player.getInventory().getArmorContents(), player.getAllowFlight()));
 
 		player.setAllowFlight(false);
-		player.getInventory().setHelmet(helmet().getItemStack());
-		player.getInventory().setChestplate(chestplate().getItemStack());
-		player.getInventory().setLeggings(leggings().getItemStack());
-		player.getInventory().setBoots(boots().getItemStack());
+		player.getInventory().setHelmet(getHelmet().getItemStack());
+		player.getInventory().setChestplate(getChestplate().getItemStack());
+		player.getInventory().setLeggings(getLeggings().getItemStack());
+		player.getInventory().setBoots(getBoots().getItemStack());
 
 		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-enabled")));
 	}
 
-	public void playerState(Player p, PvPState state) {
+	public void setPlayerState(Player p, PvPState state) {
 		playerPvpStates.put(p, state);
 	}
 
 	public @Nullable OldPlayerData getOldData(Player p) {
 		return oldPlayerDataList.stream().filter(data -> data.player().equals(p)).findFirst().orElse(null);
-	}
-
-	public List<OldPlayerData> oldPlayerDataList() {
-		return oldPlayerDataList;
-	}
-
-	public CustomItem helmet() {
-		return helmet;
-	}
-
-	public CustomItem chestplate() {
-		return chestplate;
-	}
-
-	public CustomItem leggings() {
-		return leggings;
-	}
-
-	public CustomItem boots() {
-		return boots;
 	}
 
 	public void removePlayer(Player p) {
@@ -125,7 +110,7 @@ public class PvPManager {
 	}
 
 	public void disablePvP(Player player) {
-		playerState(player, PvPState.OFF);
+		setPlayerState(player, PvPState.OFF);
 
 		OldPlayerData oldPlayerData = getOldData(player);
 		if (oldPlayerData != null) {
@@ -147,19 +132,29 @@ public class PvPManager {
 	}
 
 	public boolean isInPvP(Player player) {
-		return playerState(player) == PvPState.ON || playerState(player) == PvPState.DISABLING;
+		return getPlayerState(player) == PvPState.ON || getPlayerState(player) == PvPState.DISABLING;
 	}
 
-	public PvPState playerState(Player p) {
+	public PvPState getPlayerState(Player p) {
 		return playerPvpStates.get(p);
 	}
 
 	public void giveWeapon(Player p) {
-		p.getInventory().setItem(HubPvP.instance().getConfig().getInt("items.weapon.slot") - 1, weapon().getItemStack());
+		p.getInventory().setItem(HubPvP.instance().getConfig().getInt("items.weapon.slot") - 1, getWeapon().getItemStack());
 	}
 
-	public CustomItem weapon() {
-		return weapon;
+	public void putTimer(Player p, BukkitRunnable timerTask) {
+		if (getCurrentTimers().containsKey(p)) {
+			getCurrentTimers().get(p).cancel();
+		}
+		getCurrentTimers().put(p, timerTask);
+	}
+
+	public void removeTimer(Player p) {
+		if (getCurrentTimers().containsKey(p)) {
+			getCurrentTimers().get(p).cancel();
+		}
+		getCurrentTimers().remove(p);
 	}
 
 }

@@ -19,12 +19,12 @@ public class PlayerJoinListener implements Listener {
 
 
         if (p.hasPermission("hubpvp.use") &&
-                HubPvP.instance().getConfig().getStringList("disabled-worlds").contains(p.getWorld().getName())) {
+                !HubPvP.instance().getConfig().getStringList("disabled-worlds").contains(p.getWorld().getName())) {
             pvPManager.giveWeapon(p);
         }
 
-        pvPManager.oldPlayerDataList().add(new OldPlayerData(p, p.getInventory().getArmorContents(), p.getAllowFlight()));
-        pvPManager.playerState(p, PvPState.OFF);
+        pvPManager.getOldPlayerDataList().add(new OldPlayerData(p, p.getInventory().getArmorContents(), p.getAllowFlight()));
+        pvPManager.setPlayerState(p, PvPState.OFF);
     }
 
     @EventHandler
